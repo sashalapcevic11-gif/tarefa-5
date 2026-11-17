@@ -1,0 +1,97 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Dados observados
+x=np.array([1,2,3,5,6])
+y=np.array([7,4,5.5,40,82])
+
+# Valor que queremos estimar
+valor=4
+
+# Funcao de Newton
+def newton(x,y,valor):
+
+    n=len(x)
+    dif=np.zeros((n,n))
+    dif[:,0]=y
+
+    # Diferencas divididas
+    for j in range(1,n):
+        for i in range(n-j):
+            dif[i,j]=(dif[i+1,j-1]-dif[i,j-1])/(x[i+j]-x[i])
+
+    # Coeficientes
+    a=dif[0,:]
+
+    # Calculo do polinomio
+    resultado=a[0]
+    produto=1
+
+    for i in range(1,n):
+        produto=produto*(valor-x[i-1])
+        resultado=resultado+a[i]*produto
+
+    return resultado
+
+
+# Interpolacao de 1 grau
+x1=np.array([3,5])
+y1=np.array([5.5,40])
+
+f1=newton(x1,y1,valor)
+print('Newton 1 grau =',f1)
+
+
+# Interpolacao de 2 grau
+x2=np.array([2,3,5])
+y2=np.array([4,5.5,40])
+
+f2=newton(x2,y2,valor)
+print('Newton 2 grau =',f2)
+
+
+# Interpolacao de 3 grau
+x3=np.array([2,3,5,6])
+y3=np.array([4,5.5,40,82])
+
+f3=newton(x3,y3,valor)
+print('Newton 3 grau =',f3)
+
+
+# Interpolacao de 4 grau
+x4=np.array([1,2,3,5,6])
+y4=np.array([7,4,5.5,40,82])
+
+f4=newton(x4,y4,valor)
+print('Newton 4 grau =',f4)
+
+
+# Grafico
+plt.plot(x,y,'ok',label='dados observados')
+
+xx=np.linspace(1,6,200)
+
+def polinomio(xp,yp,xx):
+    resultado=np.zeros(len(xx))
+
+    for i in range(len(xx)):
+        resultado[i]=newton(xp,yp,xx[i])
+
+    return resultado
+
+plt.plot(xx,polinomio(x1,y1,xx),label='Newton 1 grau')
+plt.plot(xx,polinomio(x2,y2,xx),label='Newton 2 grau')
+plt.plot(xx,polinomio(x3,y3,xx),label='Newton 3 grau')
+plt.plot(xx,polinomio(x4,y4,xx),label='Newton 4 grau')
+
+plt.plot(valor,f4,'or',label='f(4)')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.grid()
+plt.legend()
+plt.show()
+
+
+#Isso mostra que os dados da tabela vieram de um polinômio de 3º grau. Dá pra perceber porque o valor de f(4) vai mudando até o 3º grau, mas depois trava em 17,5 tanto no 3º quanto no 4º grau — ou seja, o termo de 4º grau é zero e uma equação cúbica já bate exato com a função original.
+
