@@ -1,0 +1,186 @@
+# Codico do newton 
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Dados observados
+x=np.array([1,2,2.5,3,4,5])
+y=np.array([2,5,6.5,7,3,1])
+
+# Valor que queremos estimar
+valor=3.4
+
+# Funcao de Newton
+def newton(x,y,valor):
+
+    n=len(x)
+    dif=np.zeros((n,n))
+    dif[:,0]=y
+
+    # Diferencas divididas
+    for j in range(1,n):
+        for i in range(n-j):
+            dif[i,j]=(dif[i+1,j-1]-dif[i,j-1])/(x[i+j]-x[i])
+
+    # Coeficientes
+    a=dif[0,:]
+
+    # Calculo do polinomio
+    resultado=a[0]
+    produto=1
+
+    for i in range(1,n):
+        produto=produto*(valor-x[i-1])
+        resultado=resultado+a[i]*produto
+
+    return resultado
+
+
+# Interpolacao de 1 grau
+x1=np.array([3,4])
+y1=np.array([7,3])
+
+f1=newton(x1,y1,valor)
+print('Newton 1 grau =',f1)
+
+
+# Interpolacao de 2 grau
+x2=np.array([2.5,3,4])
+y2=np.array([6.5,7,3])
+
+f2=newton(x2,y2,valor)
+print('Newton 2 grau =',f2)
+
+
+# Interpolacao de 3 grau
+x3=np.array([2,2.5,3,4])
+y3=np.array([5,6.5,7,3])
+
+f3=newton(x3,y3,valor)
+print('Newton 3 grau =',f3)
+
+
+# Grafico
+plt.plot(x,y,'ok',label='dados observados')
+
+xx=np.linspace(1,5,200)
+
+# Polinomios para o grafico
+def polinomio(xp,yp,xx):
+    n=len(xp)
+    dif=np.zeros((n,n))
+    dif[:,0]=yp
+
+    for j in range(1,n):
+        for i in range(n-j):
+            dif[i,j]=(dif[i+1,j-1]-dif[i,j-1])/(xp[i+j]-xp[i])
+
+    a=dif[0,:]
+    resultado=np.zeros(len(xx))
+
+    for k in range(len(xx)):
+        produto=1
+        resultado[k]=a[0]
+
+        for i in range(1,n):
+            produto=produto*(xx[k]-xp[i-1])
+            resultado[k]=resultado[k]+a[i]*produto
+
+    return resultado
+
+plt.plot(xx,polinomio(x1,y1,xx),label='Newton 1 grau')
+plt.plot(xx,polinomio(x2,y2,xx),label='Newton 2 grau')
+plt.plot(xx,polinomio(x3,y3,xx),label='Newton 3 grau')
+
+plt.plot(valor,f3,'or',label='f(3.4)')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.grid()
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+# Codico de lagrange
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Dados observados
+x=np.array([1,2,2.5,3,4,5])
+y=np.array([2,5,6.5,7,3,1])
+
+# Valor que queremos estimar
+valor=3.4
+
+# Funcao de Lagrange
+def lagrange(x,y,valor):
+
+    n=len(x)
+    resultado=0
+
+    for i in range(n):
+        produto=1
+
+        for j in range(n):
+            if i!=j:
+                produto=produto*(valor-x[j])/(x[i]-x[j])
+
+        resultado=resultado+y[i]*produto
+
+    return resultado
+
+
+# Interpolacao de 1 grau
+x1=np.array([3,4])
+y1=np.array([7,3])
+
+f1=lagrange(x1,y1,valor)
+print('Lagrange 1 grau =',f1)
+
+
+# Interpolacao de 2 grau
+x2=np.array([2.5,3,4])
+y2=np.array([6.5,7,3])
+
+f2=lagrange(x2,y2,valor)
+print('Lagrange 2 grau =',f2)
+
+
+# Interpolacao de 3 grau
+x3=np.array([2,2.5,3,4])
+y3=np.array([5,6.5,7,3])
+
+f3=lagrange(x3,y3,valor)
+print('Lagrange 3 grau =',f3)
+
+
+# Grafico
+plt.plot(x,y,'ok',label='dados observados')
+
+xx=np.linspace(1,5,200)
+
+def graficoLagrange(x,y,xx):
+
+    resultado=np.zeros(len(xx))
+
+    for k in range(len(xx)):
+        resultado[k]=lagrange(x,y,xx[k])
+
+    return resultado
+
+plt.plot(xx,graficoLagrange(x1,y1,xx),label='Lagrange 1 grau')
+plt.plot(xx,graficoLagrange(x2,y2,xx),label='Lagrange 2 grau')
+plt.plot(xx,graficoLagrange(x3,y3,xx),label='Lagrange 3 grau')
+
+plt.plot(valor,f3,'or',label='f(3.4)')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.grid()
+plt.legend()
+plt.show()
