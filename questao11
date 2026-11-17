@@ -1,0 +1,73 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Dados observados
+x=np.array([1,2,3,5,6])
+y=np.array([7,4,5.5,40,82])
+
+# Valor que queremos estimar
+valor=4
+
+# Funcao de Lagrange
+def lagrange(x,y,valor):
+
+    n=len(x)
+    resultado=0
+
+    for i in range(n):
+        produto=y[i]
+        for j in range(n):
+            if i!=j:
+                produto=produto*(valor-x[j])/(x[i]-x[j])
+        resultado=resultado+produto
+
+    return resultado
+
+
+# Interpolacao de 1 grau
+x1=np.array([3,5])
+y1=np.array([5.5,40])
+
+f1=lagrange(x1,y1,valor)
+print('Lagrange 1 grau =',f1)
+
+
+# Interpolacao de 2 grau
+x2=np.array([2,3,5])
+y2=np.array([4,5.5,40])
+
+f2=lagrange(x2,y2,valor)
+print('Lagrange 2 grau =',f2)
+
+
+# Interpolacao de 3 grau
+x3=np.array([2,3,5,6])
+y3=np.array([4,5.5,40,82])
+
+f3=lagrange(x3,y3,valor)
+print('Lagrange 3 grau =',f3)
+
+
+# Grafico
+plt.plot(x,y,'ok',label='dados observados')
+
+xx=np.linspace(1,6,200)
+
+def polinomio(xp,yp,xx):
+    resultado=np.zeros(len(xx))
+
+    for i in range(len(xx)):
+        resultado[i]=lagrange(xp,yp,xx[i])
+
+    return resultado
+
+plt.plot(xx,polinomio(x1,y1,xx),label='Lagrange 1 grau')
+plt.plot(xx,polinomio(x2,y2,xx),label='Lagrange 2 grau')
+plt.plot(xx,polinomio(x3,y3,xx),label='Lagrange 3 grau')
+
+plt.plot(valor,f3,'or',label='f(4)')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.grid()
+plt.legend()
+plt.show()
