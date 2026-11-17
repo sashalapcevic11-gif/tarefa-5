@@ -32,93 +32,46 @@ def eliminacaodegaussingenua(A,b):
 
 
 # Dados observados
-x=np.array([0,2,4,6,9,11,12,15,17,19])
-y=np.array([5,7,6,9,8,10,12,13,17,20])
+x=np.array([10,20,30,40,50,60,70,80])
+
+y=np.array([25,70,380,550,610,1220,830,1450])
 
 plt.plot(x,y,'ok')
 plt.show()
 
-# Calculos previos
-n=len(x)
-sumXi=sum(x)
-sumYi=sum(y)
-sumXi2=sum(x*x)
-sumXiYi=sum(x*y)
-
-A = np.array([[n,sumXi],[sumXi,sumXi2]])
-b = np.array([[sumYi],[sumXiYi]])
-
-ai= eliminacaodegaussingenua(A,b)
-
-print('a0 =',ai[0])
-print('a1 =',ai[1])
-
-# Calculo do coeficiente de determinacao r²
-Sr=sum((y-(ai[0]+ai[1]*x))**2)
-yMedio = st.mean(y)
-St= sum((y-yMedio)**2)
-R2=(St-Sr)/St
-print('R² =',R2)
-
-# Erro-padrao da estimativa
-Syx=np.sqrt(Sr/(n-2))
-print('Erro-padrao =',Syx)
-
-# Coeficiente de correlacao
-r=np.sign(ai[1])*np.sqrt(R2)
-print('Coeficiente de correlacao =',r)
-
-# Grafico
-plt.plot(x,y,'ok',label='dados observados')
-plt.plot(x,ai[0]+ai[1]*x,'-b',label='ajuste linear')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.grid()
-plt.legend()
-plt.show()
-
-
-# regresao de x e y
-
-# Troca das variaveis
-x=np.array([5,7,6,9,8,10,12,13,17,20])
-y=np.array([0,2,4,6,9,11,12,15,17,19])
+# Transformacao com logaritmo natural
+lnX=np.log(x)
+lnY=np.log(y)
 
 # Calculos previos
 n=len(x)
-sumXi=sum(x)
-sumYi=sum(y)
-sumXi2=sum(x*x)
-sumXiYi=sum(x*y)
+sumXi=sum(lnX)
+sumYi=sum(lnY)
+sumXi2=sum(lnX*lnX)
+sumXiYi=sum(lnX*lnY)
 
-A = np.array([[n,sumXi],[sumXi,sumXi2]])
-b = np.array([[sumYi],[sumXiYi]])
+A=np.array([[n,sumXi],[sumXi,sumXi2]])
+b=np.array([[sumYi],[sumXiYi]])
 
-ai= eliminacaodegaussingenua(A,b)
+ai=eliminacaodegaussingenua(A,b)
 
-print('a0 =',ai[0])
-print('a1 =',ai[1])
+# Coeficientes do modelo
+a=np.exp(ai[0])
+print('a =',a)
+print('b =',ai[1])
 
-# Calculo do coeficiente de determinacao r²
-Sr=sum((y-(ai[0]+ai[1]*x))**2)
-yMedio = st.mean(y)
-St= sum((y-yMedio)**2)
+# Calculo do coeficiente de determinacao R²
+Sr=sum((lnY-(ai[0]+ai[1]*lnX))**2)
+yMedio=st.mean(lnY)
+St=sum((lnY-yMedio)**2)
 R2=(St-Sr)/St
 print('R² =',R2)
 
-# Erro-padrao da estimativa
-Syx=np.sqrt(Sr/(n-2))
-print('Erro-padrao =',Syx)
-
-# Coeficiente de correlacao
-r=np.sign(ai[1])*np.sqrt(R2)
-print('Coeficiente de correlacao =',r)
-
 # Grafico
-plt.plot(x,y,'ok',label='dados observados')
-plt.plot(x,ai[0]+ai[1]*x,'-b',label='ajuste linear')
-plt.xlabel('y original')
-plt.ylabel('x original')
+plt.plot(x,y,'ok',label="dados observados")
+plt.plot(x,a*x**ai[1],'-b',label="$F_t=av^b$")
+plt.xlabel('v (m/s)')
+plt.ylabel('Ft (N)')
 plt.grid()
 plt.legend()
 plt.show()
