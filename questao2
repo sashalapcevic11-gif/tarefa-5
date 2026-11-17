@@ -122,3 +122,7 @@ plt.ylabel('x original')
 plt.grid()
 plt.legend()
 plt.show()
+
+
+
+#O coeficiente de correlação é o mesmo nos dois casos porque a relação linear entre as variáveis não muda quando você inverte os eixos. Já as retas e o erro-padrão mudam, e uma equação não é simplesmente a inversa da outra, porque na primeira regressão o método minimiza os erros na vertical e, na segunda, minimiza os erros na horizontal.
