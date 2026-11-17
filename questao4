@@ -1,11 +1,37 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 import statistics as st
 
+# Eliminacao de Gauss
+def eliminacaodegaussingenua(A,b):
+    Aum=np.hstack((A,b)).astype(float)
+    print(Aum)
+
+    n=len(b)
+
+    # Eliminacao progressiva
+    for i in range(n-1):
+        for j in range(i+1,n):
+            fator=Aum[j,i]/Aum[i,i]
+            Aum[j,i:n+1]=Aum[j,i:n+1]-fator*Aum[i,i:n+1]
+
+    print(Aum)
+
+    # Substituicao regressiva
+    x=np.zeros(n)
+    x[n-1]=Aum[n-1,n]/Aum[n-1,n-1]
+
+    for i in range(n-2,-1,-1):
+        soma=0
+        for j in range(i+1,n):
+            soma+=Aum[i,j]*x[j]
+        x[i]=(Aum[i,n]-soma)/Aum[i,i]
+
+    return x
+
+
 # Dados observados
 T=np.array([-40,0,40,80,120,160])
-
 P=np.array([6900,8100,9350,10500,11700,12800])
 
 # Conversao de Celsius para Kelvin
@@ -17,15 +43,39 @@ m=1000
 M=28
 
 # Calculo do numero de mols
-n=m/M
+n_mols=m/M
 
-# Calculo da constante R
-R=P*V/(n*TK)
+# Calculos previos para regressao linear (P = a0 + a1*TK)
+n=len(TK)
+sumXi=sum(TK)
+sumYi=sum(P)
+sumXi2=sum(TK*TK)
+sumXiYi=sum(TK*P)
 
-print('Valores de R:')
-print(R)
+A=np.array([[n,sumXi],[sumXi,sumXi2]])
+b=np.array([[sumYi],[sumXiYi]])
 
-# Calculo da media de R
-Rmedio=st.mean(R)
+ai=eliminacaodegaussingenua(A,b)
 
-print('R medio =',Rmedio)
+print('a0 =',ai[0])
+print('a1 =',ai[1])
+
+# Como P = (n_mols * R / V) * TK, temos a1 = n_mols * R / V
+R=ai[1]*V/n_mols
+print('R =',R)
+
+# Calculo do coeficiente de determinacao R²
+Sr=sum((P-(ai[0]+ai[1]*TK))**2)
+yMedio=st.mean(P)
+St=sum((P-yMedio)**2)
+R2=(St-Sr)/St
+print('R² =',R2)
+
+# Grafico
+plt.plot(TK,P,'ok',label='dados observados')
+plt.plot(TK,ai[0]+ai[1]*TK,'-b',label='ajuste linear')
+plt.xlabel('T (K)')
+plt.ylabel('P (N/m²)')
+plt.grid()
+plt.legend()
+plt.show()
