@@ -1,0 +1,31 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics as st
+
+# Dados observados
+T=np.array([-40,0,40,80,120,160])
+
+P=np.array([6900,8100,9350,10500,11700,12800])
+
+# Conversao de Celsius para Kelvin
+TK=T+273.15
+
+# Dados do problema
+V=10
+m=1000
+M=28
+
+# Calculo do numero de mols
+n=m/M
+
+# Calculo da constante R
+R=P*V/(n*TK)
+
+print('Valores de R:')
+print(R)
+
+# Calculo da media de R
+Rmedio=st.mean(R)
+
+print('R medio =',Rmedio)
