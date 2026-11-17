@@ -1,0 +1,78 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics as st
+
+# Eliminação de Gauss
+def eliminacaodegaussingenua(A,b):
+    Aum=np.hstack((A,b))
+    print(Aum)
+
+    n=len(b)
+
+    # Eliminação progressiva
+    for i in range(n-1):
+        for j in range(i+1,n):
+            fator=Aum[j,i]/Aum[i,i]
+            Aum[j,i:n+1]=Aum[j,i:n+1]-fator*Aum[i,i:n+1]
+
+    print(Aum)
+
+    # Substituição regressiva
+    x=np.zeros(n)
+    x[n-1]=Aum[n-1,n]/Aum[n-1,n-1]
+
+    for i in range(n-2,-1,-1):
+        soma=0
+        for j in range(i+1,n):
+            soma+=Aum[i,j]*x[j]
+        x[i]=(Aum[i,n]-soma)/Aum[i,i]
+
+    return x
+
+
+# Dados observados
+x=np.array([0.1,0.2,0.4,0.6,0.9,1.3,1.5,1.8])
+
+y=np.array([0.75,1.25,1.45,1.25,0.55,0.35,0.28,0.18])
+
+plt.plot(x,y,'ok')
+plt.show()
+
+# Transformacao com logaritmo natural
+lnY=np.log(y/x)
+
+# Calculos previos
+n=len(x)
+sumXi=sum(x)
+sumYi=sum(lnY)
+sumXi2=sum(x*x)
+sumXiYi=sum(x*lnY)
+
+A=np.array([[n,sumXi],[sumXi,sumXi2]])
+b=np.array([[sumYi],[sumXiYi]])
+
+ai=eliminacaodegaussingenua(A,b)
+
+# Calculo dos coeficientes
+alfa=np.exp(ai[0])
+beta=ai[1]
+
+print('Alfa =',alfa)
+print('Beta =',beta)
+
+# Calculo do coeficiente de determinacao R²
+Sr=sum((lnY-(ai[0]+ai[1]*x))**2)
+yMedio=st.mean(lnY)
+St=sum((lnY-yMedio)**2)
+R2=(St-Sr)/St
+print('R² =',R2)
+
+# Grafico
+plt.plot(x,y,'ok',label="dados observados")
+plt.plot(x,alfa*x*np.exp(beta*x),'-b',label="$y=\\alpha xe^{\\beta x}$")
+plt.xlabel('x')
+plt.ylabel('y')
+plt.grid()
+plt.legend()
+plt.show()
